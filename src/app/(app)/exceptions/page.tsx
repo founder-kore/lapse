@@ -232,15 +232,8 @@ export default async function ExceptionsPage() {
   const total = noResponse.length + assetsOut.length;
 
   return (
-    <main className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <PageHeader
-        title="Exceptions"
-        description={
-          total === 0
-            ? "Open findings, with the timestamped evidence behind each one."
-            : `${plural(total, "open finding")}, most overdue first. Every ask is timestamped — this page is the audit trail.`
-        }
-      />
+    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <PageHeader title="Exceptions" />
 
       <div className="mt-6">
         {total === 0 ? (

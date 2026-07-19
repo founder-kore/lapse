@@ -1,11 +1,5 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  MailX,
-  PackageX,
-  RefreshCw,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, MailX, PackageX, RefreshCw, ShieldCheck } from "lucide-react";
 import { db } from "@/lib/db";
 import { runDailyCheck } from "@/lib/actions";
 import { daysUntil } from "@/lib/dates";
@@ -208,124 +202,6 @@ function PopulationCard({
   );
 }
 
-function TimelineCard({ rows }: { rows: { c: Contractor; days: number }[] }) {
-  // Bucket end dates by calendar month; color each contractor by urgency.
-  const now = new Date();
-  const currentKey = now.getFullYear() * 12 + now.getMonth();
-  const buckets = new Map<
-    number,
-    { label: string; expired: number; soon: number; later: number }
-  >();
-  for (const { c, days } of rows) {
-    const d = new Date(c.endDate);
-    const key = d.getFullYear() * 12 + d.getMonth();
-    if (!buckets.has(key)) {
-      const label = new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        ...(d.getFullYear() !== now.getFullYear() ? { year: "2-digit" } : {}),
-      }).format(d);
-      buckets.set(key, { label, expired: 0, soon: 0, later: 0 });
-    }
-    const b = buckets.get(key)!;
-    if (days < 0) b.expired++;
-    else if (days <= 30) b.soon++;
-    else b.later++;
-  }
-  const ordered = [...buckets.entries()].sort((a, b) => a[0] - b[0]);
-  const max = Math.max(...ordered.map(([, b]) => b.expired + b.soon + b.later), 1);
-  const H = 64; // px height of the tallest column
-
-  return (
-    <div className={`${card} min-w-0 p-5 lg:col-span-12`}>
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-600">
-          End dates by month
-        </p>
-        <div className="flex items-center gap-4 text-[11px] text-zinc-600">
-          <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-2 rounded-sm bg-red-600" />
-            Overdue
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-2 rounded-sm bg-amber-400" />
-            Due ≤ 30 days
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-2 rounded-sm bg-zinc-300" />
-            Later
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span aria-hidden className="size-2 rounded-full bg-indigo-600" />
-            Current month
-          </span>
-        </div>
-      </div>
-      {/* Chart scrolls inside the card on narrow screens; page never overflows. */}
-      <div className="mt-5 overflow-x-auto pb-1">
-        <div className="flex min-w-[540px] items-end gap-2 lg:min-w-0">
-          {ordered.map(([key, b]) => {
-          const total = b.expired + b.soon + b.later;
-          const px = (n: number) =>
-            n === 0 ? 0 : Math.max(3, Math.round((n / max) * H));
-          const isNow = key === currentKey;
-          const breakdown = [
-            b.expired > 0 ? `${b.expired} overdue` : null,
-            b.soon > 0 ? `${b.soon} due ≤30d` : null,
-            b.later > 0 ? `${b.later} later` : null,
-          ]
-            .filter(Boolean)
-            .join(" · ");
-          return (
-            <div
-              key={key}
-              className="group relative flex flex-1 flex-col items-center gap-1"
-            >
-              <span
-                role="tooltip"
-                className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-zinc-900 px-2 py-1 text-[11px] leading-4 text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100"
-              >
-                {b.label} · {breakdown}
-              </span>
-              <span className="text-[11px] font-medium tabular-nums leading-3 text-zinc-600">
-                {total}
-              </span>
-              <div
-                className="flex w-full max-w-9 flex-col justify-end overflow-hidden rounded-sm bg-zinc-50"
-                style={{ height: H }}
-              >
-                <div
-                  className="w-full bg-zinc-300 transition-all duration-300"
-                  style={{ height: px(b.later) }}
-                />
-                <div
-                  className="w-full bg-amber-400 transition-all duration-300"
-                  style={{ height: px(b.soon) }}
-                />
-                <div
-                  className="w-full bg-red-600 transition-all duration-300"
-                  style={{ height: px(b.expired) }}
-                />
-              </div>
-              <span
-                className={`text-[11px] leading-4 ${
-                  isNow ? "font-semibold text-indigo-700" : "text-zinc-600"
-                }`}
-              >
-                {b.label}
-              </span>
-              <span
-                aria-hidden
-                className={`size-1 rounded-full ${isNow ? "bg-indigo-600" : "bg-transparent"}`}
-              />
-            </div>
-          );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ---------------------------------------------------------------------------
 
 export default async function Dashboard() {
@@ -358,11 +234,8 @@ export default async function Dashboard() {
   const items = contractors.map(toView);
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-      <PageHeader
-        title="Dashboard"
-        description="Is everything okay? The two red numbers answer it; the list below has the receipts."
-      >
+    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <PageHeader title="Dashboard">
         <form action={runDailyCheck}>
           <ActionButton className={buttonPrimary}>
             <RefreshCw size={14} aria-hidden />
@@ -382,7 +255,6 @@ export default async function Dashboard() {
           inWindow={inWindow}
           active={active}
         />
-        <TimelineCard rows={rows} />
       </div>
 
       <h2 className="mb-3 mt-8 text-sm font-semibold text-zinc-900">

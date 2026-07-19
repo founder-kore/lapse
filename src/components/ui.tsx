@@ -183,33 +183,6 @@ export function AuditTrail({ entries }: { entries: AuditEntryView[] }) {
   );
 }
 
-/** Micro-viz: one dot per check-in — filled if answered, hollow if not. */
-export function CheckInDots({ entries }: { entries: AuditEntryView[] }) {
-  if (entries.length === 0) {
-    return <span className="text-xs text-zinc-600">—</span>;
-  }
-  const answered = entries.filter((e) => e.response).length;
-  return (
-    <span
-      className="inline-flex items-center gap-1"
-      title={`${answered} of ${entries.length} answered`}
-    >
-      {entries.slice(0, 5).map((e) => (
-        <span
-          key={e.id}
-          aria-hidden
-          className={`size-1.5 rounded-full ${
-            e.response ? "bg-zinc-500" : "border border-zinc-400 bg-white"
-          }`}
-        />
-      ))}
-      <span className="ml-1 text-xs tabular-nums text-zinc-600">
-        {answered}/{entries.length}
-      </span>
-    </span>
-  );
-}
-
 /** Shared button styles (used by forms and link-buttons). */
 export const buttonPrimary =
   "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-[background-color,transform] duration-150 hover:bg-indigo-700 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 disabled:active:scale-100";

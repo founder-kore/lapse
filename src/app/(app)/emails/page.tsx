@@ -41,7 +41,7 @@ export default async function EmailsPage(props: {
   });
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+    <main className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <PageHeader
         title="Emails"
         description={`${emails.length} generated, newest first. Nothing is sent — each is rendered exactly as the manager would receive it, with links authorized by a per-check-in token.`}

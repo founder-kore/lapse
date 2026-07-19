@@ -13,7 +13,6 @@ import { ActionForm } from "@/components/action-form";
 import {
   AuditTrail,
   Badge,
-  CheckInDots,
   buttonSmall,
   card,
   type AuditEntryView,
@@ -58,7 +57,7 @@ function daysTone(days: number): string {
 
 // Mobile: chevron · days · name block · status. md+: the full seven columns.
 const COLS_MD =
-  "md:grid-cols-[1rem_3rem_minmax(0,1fr)_minmax(0,9.5rem)_6.25rem_6rem_5rem]";
+  "md:grid-cols-[1rem_3rem_minmax(0,1fr)_minmax(0,9.5rem)_6.25rem_6rem_8rem]";
 const GRID = `grid grid-cols-[1.125rem_2.75rem_minmax(0,1fr)_auto] ${COLS_MD} items-center gap-x-3 px-3 sm:px-4`;
 
 const URGENCY_CHIPS: { id: Urgency; label: string }[] = [
@@ -70,7 +69,7 @@ const URGENCY_CHIPS: { id: Urgency; label: string }[] = [
 ];
 
 const GROUPS: { id: Exclude<Urgency, "all">; label: string }[] = [
-  { id: "expired", label: "Expired — action required" },
+  { id: "expired", label: "Overdue" },
   { id: "week", label: "Expiring this week" },
   { id: "month", label: "Expiring this month" },
   { id: "healthy", label: "Healthy — beyond 30 days" },
@@ -253,8 +252,9 @@ function Row({
         <span className="text-right md:text-left">
           <Badge>{c.statusLabel}</Badge>
         </span>
-        <span className="hidden text-right md:block">
-          <CheckInDots entries={c.checkIns} />
+        <span className="hidden whitespace-nowrap text-right text-xs tabular-nums text-zinc-600 md:block">
+          {c.checkIns.length} asked ·{" "}
+          {c.checkIns.filter((e) => e.response).length} answered
         </span>
       </button>
       <div
