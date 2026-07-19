@@ -5,6 +5,13 @@
 
 import type { LucideIcon } from "lucide-react";
 
+/**
+ * The one surface treatment every card in the app shares: radius, hairline
+ * border, white fill, and a whisper of elevation.
+ */
+export const card =
+  "rounded-xl border border-zinc-200 bg-white shadow-[0_1px_2px_0_rgba(24,24,27,0.04)]";
+
 /** Page title bar: title + one-line description, actions on the right. */
 export function PageHeader({
   title,
@@ -49,7 +56,7 @@ export function StatCard({
 }) {
   const hot = alarm && value > 0;
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-4">
+    <div className={`${card} p-4`}>
       <div className="flex items-center justify-between">
         <span className="text-xs font-medium text-zinc-600">{label}</span>
         {Icon ? (
@@ -113,9 +120,11 @@ export function EmptyState({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white px-6 py-14 text-center">
-      <Icon size={22} className="mx-auto text-zinc-400" aria-hidden />
-      <p className="mt-3 text-sm font-medium text-zinc-900">{title}</p>
+    <div className={`${card} px-6 py-14 text-center`}>
+      <span className="mx-auto flex size-11 items-center justify-center rounded-full bg-zinc-50 ring-1 ring-zinc-200">
+        <Icon size={20} className="text-zinc-500" aria-hidden />
+      </span>
+      <p className="mt-4 text-sm font-semibold text-zinc-900">{title}</p>
       {children ? (
         <p className="mx-auto mt-1.5 max-w-md text-sm leading-6 text-zinc-600">
           {children}
@@ -203,11 +212,11 @@ export function CheckInDots({ entries }: { entries: AuditEntryView[] }) {
 
 /** Shared button styles (used by forms and link-buttons). */
 export const buttonPrimary =
-  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm transition-[background-color,transform] duration-150 hover:bg-indigo-700 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 disabled:active:scale-100";
 
 export const buttonSecondary =
-  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-zinc-300 bg-white px-3 py-1.5 text-sm font-medium text-zinc-800 shadow-sm transition-[background-color,transform,border-color] duration-150 hover:border-zinc-400 hover:bg-zinc-50 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 disabled:active:scale-100";
 
 /** Compact variant for row-level actions. */
 export const buttonSmall =
-  "inline-flex items-center gap-1.5 whitespace-nowrap rounded-md border border-zinc-300 bg-white px-2.5 py-1 text-xs font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60";
+  "inline-flex items-center justify-center gap-1.5 whitespace-nowrap rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-xs font-medium text-zinc-800 shadow-sm transition-[background-color,transform,border-color] duration-150 hover:border-zinc-400 hover:bg-zinc-50 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 disabled:active:scale-100";

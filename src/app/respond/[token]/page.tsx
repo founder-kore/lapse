@@ -7,6 +7,7 @@ import {
   ListChecks,
 } from "lucide-react";
 import type { Contractor } from "@prisma/client";
+import { ActionButton } from "@/components/action-button";
 import { db } from "@/lib/db";
 import { daysFromNow, daysUntil } from "@/lib/dates";
 import { formatDate } from "@/lib/display";
@@ -27,16 +28,16 @@ function toInputDate(d: Date): string {
  */
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="mx-auto max-w-md px-6 py-16">
+    <main className="mx-auto max-w-md px-4 py-10 sm:px-6 sm:py-16">
       <div className="mb-5 flex items-center justify-center gap-2">
-        <span className="flex size-6 items-center justify-center rounded-md bg-indigo-600">
+        <span className="flex size-6 items-center justify-center rounded-md bg-indigo-600 shadow-sm">
           <Hourglass size={13} className="text-white" aria-hidden />
         </span>
         <span className="text-sm font-semibold tracking-tight text-zinc-900">
           Lapse
         </span>
       </div>
-      <div className="rounded-xl border border-zinc-200 bg-white p-7 shadow-sm">
+      <div className="animate-rise rounded-xl border border-zinc-200 bg-white p-5 shadow-[0_1px_2px_0_rgba(24,24,27,0.04)] sm:p-7">
         {children}
       </div>
       <p className="mt-5 text-center text-xs text-zinc-600">
@@ -55,9 +56,9 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 }
 
 const btnPrimary =
-  "inline-flex items-center justify-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-indigo-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
+  "inline-flex items-center justify-center gap-1.5 rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-[background-color,transform] duration-150 hover:bg-indigo-700 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-60 disabled:active:scale-100";
 const btnSecondary =
-  "inline-flex items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-colors hover:bg-zinc-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
+  "inline-flex items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white px-4 py-2 text-sm font-medium text-zinc-800 shadow-sm transition-[background-color,transform,border-color] duration-150 hover:border-zinc-400 hover:bg-zinc-50 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600";
 
 function OffboardingChecklist({ contractor }: { contractor: Contractor }) {
   const items = [
@@ -186,9 +187,9 @@ export default async function RespondPage(props: {
         </p>
         <form action={submitEnding} className="mt-6 flex flex-wrap gap-2.5">
           <input type="hidden" name="token" value={token} />
-          <button type="submit" className={btnPrimary}>
+          <ActionButton className={btnPrimary}>
             Confirm — {name} is ending
-          </button>
+          </ActionButton>
           <Link href={`/respond/${token}`} className={btnSecondary}>
             Back
           </Link>
@@ -237,9 +238,9 @@ export default async function RespondPage(props: {
             </p>
           ) : null}
           <div className="mt-6 flex flex-wrap gap-2.5">
-            <button type="submit" className={btnPrimary}>
+            <ActionButton className={btnPrimary}>
               Save new end date
-            </button>
+            </ActionButton>
             <Link href={`/respond/${token}`} className={btnSecondary}>
               Back
             </Link>
@@ -261,7 +262,7 @@ export default async function RespondPage(props: {
         {formatDate(c.endDate)}. One click records your answer with a
         timestamp — no login needed.
       </p>
-      <div className="mt-6 grid grid-cols-2 gap-2.5">
+      <div className="mt-6 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
         <Link
           href={`/respond/${token}?intent=extending`}
           className={btnPrimary}

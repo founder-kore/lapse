@@ -22,7 +22,7 @@ export function Tabs({ items }: { items: TabItem[] }) {
     <div>
       <div
         role="tablist"
-        className="inline-flex gap-1 rounded-lg bg-zinc-100 p-1"
+        className="flex w-full gap-1 overflow-x-auto rounded-lg bg-zinc-100 p-1 sm:inline-flex sm:w-auto"
       >
         {items.map((t) => {
           const selected = t.id === current?.id;
@@ -32,7 +32,7 @@ export function Tabs({ items }: { items: TabItem[] }) {
               role="tab"
               aria-selected={selected}
               onClick={() => setActive(t.id)}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 ${
                 selected
                   ? "bg-white text-zinc-900 shadow-sm"
                   : "text-zinc-600 hover:text-zinc-900"
@@ -50,7 +50,9 @@ export function Tabs({ items }: { items: TabItem[] }) {
           );
         })}
       </div>
-      <div className="mt-4">{current?.content}</div>
+      <div key={current?.id} className="animate-rise mt-4">
+        {current?.content}
+      </div>
     </div>
   );
 }

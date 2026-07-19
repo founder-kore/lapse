@@ -9,12 +9,13 @@ import {
   Send,
 } from "lucide-react";
 import { markAssetReturned, resendNudge } from "@/lib/actions";
-import { ActionButton } from "@/components/action-button";
+import { ActionForm } from "@/components/action-form";
 import {
   AuditTrail,
   Badge,
   CheckInDots,
   buttonSmall,
+  card,
   type AuditEntryView,
 } from "@/components/ui";
 
@@ -55,8 +56,10 @@ function daysTone(days: number): string {
   return "text-zinc-600";
 }
 
-const GRID =
-  "grid grid-cols-[1rem_3rem_minmax(0,1fr)_minmax(0,9.5rem)_6.25rem_6rem_5rem] items-center gap-x-3 px-4";
+// Mobile: chevron · days · name block · status. md+: the full seven columns.
+const COLS_MD =
+  "md:grid-cols-[1rem_3rem_minmax(0,1fr)_minmax(0,9.5rem)_6.25rem_6rem_5rem]";
+const GRID = `grid grid-cols-[1.125rem_2.75rem_minmax(0,1fr)_auto] ${COLS_MD} items-center gap-x-3 px-3 sm:px-4`;
 
 const URGENCY_CHIPS: { id: Urgency; label: string }[] = [
   { id: "all", label: "All" },
@@ -77,7 +80,9 @@ const GROUPS: { id: Exclude<Urgency, "all">; label: string }[] = [
 
 function ColumnHeader() {
   return (
-    <div className={`${GRID} border-b border-zinc-200 py-2`}>
+    <div
+      className={`hidden border-b border-zinc-200 py-2 md:grid ${COLS_MD} items-center gap-x-3 px-3 sm:px-4`}
+    >
       <span />
       {["Days", "Contractor", "Asset", "End date", "Status", "Check-ins"].map(
         (h, i) => (
@@ -103,8 +108,8 @@ function ExpandedPanel({ c }: { c: ContractorRowView }) {
       : { label: "In use", cls: "text-zinc-600" };
 
   return (
-    <div className="border-t border-zinc-100 bg-zinc-50/60 px-4 py-4 pl-[4.75rem]">
-      <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)]">
+    <div className="animate-rise border-t border-zinc-100 bg-zinc-50/60 px-4 py-4 sm:px-5 md:pl-[4.75rem]">
+      <div className="grid gap-5 md:gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.5fr)]">
         <div>
           <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-600">
             Manager
@@ -162,22 +167,26 @@ function ExpandedPanel({ c }: { c: ContractorRowView }) {
       {(c.status !== "ENDED" || (c.assetType && !c.assetReturned)) && (
         <div className="mt-4 flex flex-wrap gap-2 border-t border-zinc-200/70 pt-3.5">
           {c.status !== "ENDED" ? (
-            <form action={resendNudge}>
-              <input type="hidden" name="contractorId" value={c.id} />
-              <ActionButton className={buttonSmall}>
-                <Send size={12} aria-hidden />
-                Send new nudge
-              </ActionButton>
-            </form>
+            <ActionForm
+              action={resendNudge}
+              fields={{ contractorId: c.id }}
+              success={`Nudge sent — a fresh email for ${c.managerName} is in the outbox.`}
+              buttonClassName={buttonSmall}
+            >
+              <Send size={12} aria-hidden />
+              Send new nudge
+            </ActionForm>
           ) : null}
           {c.assetType && !c.assetReturned ? (
-            <form action={markAssetReturned}>
-              <input type="hidden" name="contractorId" value={c.id} />
-              <ActionButton className={buttonSmall}>
-                <PackageCheck size={12} aria-hidden />
-                Mark asset returned
-              </ActionButton>
-            </form>
+            <ActionForm
+              action={markAssetReturned}
+              fields={{ contractorId: c.id }}
+              success={`${c.assetType} marked as returned for ${c.name}.`}
+              buttonClassName={buttonSmall}
+            >
+              <PackageCheck size={12} aria-hidden />
+              Mark asset returned
+            </ActionForm>
           ) : null}
         </div>
       )}
@@ -216,11 +225,15 @@ function Row({
           <span className="block truncate text-sm font-medium text-zinc-900">
             {c.name}
           </span>
-          <span className="block truncate text-xs text-zinc-600">
+          {/* Mobile: fold manager + end date into the meta line. */}
+          <span className="block truncate text-xs text-zinc-600 md:hidden">
+            {c.managerName} · ends {c.endDateLabel}
+          </span>
+          <span className="hidden truncate text-xs text-zinc-600 md:block">
             {c.managerName}
           </span>
         </span>
-        <span className="min-w-0">
+        <span className="hidden min-w-0 md:block">
           {c.assetType ? (
             <>
               <span className="block truncate text-xs text-zinc-700">
@@ -234,13 +247,13 @@ function Row({
             <span className="text-xs text-zinc-600">—</span>
           )}
         </span>
-        <span className="text-xs tabular-nums text-zinc-600">
+        <span className="hidden text-xs tabular-nums text-zinc-600 md:block">
           {c.endDateLabel}
         </span>
-        <span>
+        <span className="text-right md:text-left">
           <Badge>{c.statusLabel}</Badge>
         </span>
-        <span className="text-right">
+        <span className="hidden text-right md:block">
           <CheckInDots entries={c.checkIns} />
         </span>
       </button>
@@ -278,7 +291,7 @@ function GroupStrip({
         type="button"
         onClick={toggle.onClick}
         aria-expanded={toggle.open}
-        className="flex w-full items-center gap-2 bg-zinc-50 px-4 py-2 text-left hover:bg-zinc-100"
+        className="flex w-full items-center gap-2 bg-zinc-50 px-3 py-2 text-left transition-colors hover:bg-zinc-100 sm:px-4"
       >
         <ChevronRight
           size={14}
@@ -293,7 +306,9 @@ function GroupStrip({
     );
   }
   return (
-    <div className="flex items-baseline gap-2 bg-zinc-50 px-4 py-2">{inner}</div>
+    <div className="flex items-baseline gap-2 bg-zinc-50 px-3 py-2 sm:px-4">
+      {inner}
+    </div>
   );
 }
 
@@ -367,7 +382,7 @@ export function ContractorList({ items }: { items: ContractorRowView[] }) {
           value={status}
           onChange={(e) => setStatus(e.target.value)}
           aria-label="Filter by status"
-          className={`${inputCls} px-2.5 py-1.5`}
+          className={`${inputCls} flex-1 px-2.5 py-1.5 sm:flex-none`}
         >
           <option value="all">All statuses</option>
           <option value="ACTIVE">Active</option>
@@ -379,7 +394,7 @@ export function ContractorList({ items }: { items: ContractorRowView[] }) {
           value={sort}
           onChange={(e) => setSort(e.target.value as Sort)}
           aria-label="Sort"
-          className={`${inputCls} px-2.5 py-1.5`}
+          className={`${inputCls} flex-1 px-2.5 py-1.5 sm:flex-none`}
         >
           <option value="urgent">Most urgent first</option>
           <option value="name">Contractor A–Z</option>
@@ -410,7 +425,7 @@ export function ContractorList({ items }: { items: ContractorRowView[] }) {
         })}
       </div>
 
-      <div className="mt-3 overflow-hidden rounded-lg border border-zinc-200 bg-white">
+      <div className={`mt-3 overflow-hidden ${card}`}>
         <ColumnHeader />
         {filtered.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-zinc-600">

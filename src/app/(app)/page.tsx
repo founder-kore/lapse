@@ -14,7 +14,8 @@ import {
   ContractorList,
   type ContractorRowView,
 } from "@/components/contractor-list";
-import { PageHeader, buttonPrimary } from "@/components/ui";
+import { ActionButton } from "@/components/action-button";
+import { PageHeader, buttonPrimary, card } from "@/components/ui";
 import type { CheckIn, Contractor } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
@@ -119,7 +120,7 @@ function NeedsAttentionCard({
 }) {
   const total = expiredNoResponse + assetsOutstanding;
   return (
-    <div className="flex flex-col rounded-lg border border-zinc-200 bg-white p-5 lg:col-span-5">
+    <div className={`${card} flex flex-col p-5 lg:col-span-5`}>
       <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-600">
         Needs attention
       </p>
@@ -169,7 +170,7 @@ function PopulationCard({
   active: number;
 }) {
   return (
-    <div className="flex flex-col rounded-lg border border-zinc-200 bg-white p-5 lg:col-span-7">
+    <div className={`${card} flex flex-col p-5 lg:col-span-7`}>
       <div className="flex items-baseline justify-between">
         <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-600">
           Population by urgency
@@ -235,7 +236,7 @@ function TimelineCard({ rows }: { rows: { c: Contractor; days: number }[] }) {
   const H = 64; // px height of the tallest column
 
   return (
-    <div className="rounded-lg border border-zinc-200 bg-white p-5 lg:col-span-12">
+    <div className={`${card} min-w-0 p-5 lg:col-span-12`}>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
         <p className="text-[11px] font-medium uppercase tracking-wider text-zinc-600">
           End dates by month
@@ -259,23 +260,37 @@ function TimelineCard({ rows }: { rows: { c: Contractor; days: number }[] }) {
           </span>
         </div>
       </div>
-      <div className="mt-5 flex items-end gap-2">
-        {ordered.map(([key, b]) => {
+      {/* Chart scrolls inside the card on narrow screens; page never overflows. */}
+      <div className="mt-5 overflow-x-auto pb-1">
+        <div className="flex min-w-[540px] items-end gap-2 lg:min-w-0">
+          {ordered.map(([key, b]) => {
           const total = b.expired + b.soon + b.later;
           const px = (n: number) =>
             n === 0 ? 0 : Math.max(3, Math.round((n / max) * H));
           const isNow = key === currentKey;
+          const breakdown = [
+            b.expired > 0 ? `${b.expired} overdue` : null,
+            b.soon > 0 ? `${b.soon} due ≤30d` : null,
+            b.later > 0 ? `${b.later} later` : null,
+          ]
+            .filter(Boolean)
+            .join(" · ");
           return (
             <div
               key={key}
-              className="flex flex-1 flex-col items-center gap-1"
-              title={`${b.label}: ${total} end date${total === 1 ? "" : "s"}`}
+              className="group relative flex flex-1 flex-col items-center gap-1"
             >
+              <span
+                role="tooltip"
+                className="pointer-events-none absolute -top-8 left-1/2 z-10 -translate-x-1/2 whitespace-nowrap rounded-md bg-zinc-900 px-2 py-1 text-[11px] leading-4 text-white opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100"
+              >
+                {b.label} · {breakdown}
+              </span>
               <span className="text-[11px] font-medium tabular-nums leading-3 text-zinc-600">
                 {total}
               </span>
               <div
-                className="flex w-full max-w-9 flex-col justify-end overflow-hidden rounded-sm"
+                className="flex w-full max-w-9 flex-col justify-end overflow-hidden rounded-sm bg-zinc-50"
                 style={{ height: H }}
               >
                 <div
@@ -304,7 +319,8 @@ function TimelineCard({ rows }: { rows: { c: Contractor; days: number }[] }) {
               />
             </div>
           );
-        })}
+          })}
+        </div>
       </div>
     </div>
   );
@@ -342,20 +358,20 @@ export default async function Dashboard() {
   const items = contractors.map(toView);
 
   return (
-    <main className="mx-auto max-w-5xl px-8 py-8">
+    <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <PageHeader
         title="Dashboard"
         description="Is everything okay? The two red numbers answer it; the list below has the receipts."
       >
         <form action={runDailyCheck}>
-          <button type="submit" className={buttonPrimary}>
+          <ActionButton className={buttonPrimary}>
             <RefreshCw size={14} aria-hidden />
             Run daily check
-          </button>
+          </ActionButton>
         </form>
       </PageHeader>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-12">
+      <div className="mt-6 grid grid-cols-1 gap-3 lg:grid-cols-12">
         <NeedsAttentionCard
           expiredNoResponse={expiredNoResponse}
           assetsOutstanding={assetsOutstanding}

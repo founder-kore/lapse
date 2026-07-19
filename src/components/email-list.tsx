@@ -1,8 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Check, Clock, Inbox } from "lucide-react";
-import { Badge, EmptyState, buttonSecondary } from "@/components/ui";
+import { Check, CircleCheck, Clock, Inbox, X } from "lucide-react";
+import { Badge, EmptyState, buttonSecondary, card } from "@/components/ui";
 
 export type EmailView = {
   id: string;
@@ -20,6 +20,47 @@ export type EmailView = {
 };
 
 type StatusFilter = "all" | "awaiting" | "answered";
+
+/**
+ * Dismissible confirmation shown after "Run daily check" lands here with
+ * ?created=&flipped= — a proper inline toast rather than a static banner.
+ */
+export function ResultBanner({
+  created,
+  flipped,
+}: {
+  created: number;
+  flipped: number;
+}) {
+  const [visible, setVisible] = useState(true);
+  if (!visible) return null;
+  return (
+    <div
+      role="status"
+      className="animate-rise flex items-start gap-2.5 rounded-xl border border-indigo-200 bg-indigo-50 px-4 py-3"
+    >
+      <CircleCheck
+        size={16}
+        className="mt-0.5 shrink-0 text-indigo-700"
+        aria-hidden
+      />
+      <p className="flex-1 text-sm leading-6 text-indigo-900">
+        <span className="font-semibold">Daily check complete.</span> Created{" "}
+        {created} new check-in{created === 1 ? "" : "s"} · flipped {flipped} to
+        no-response.
+        {created === 0 && flipped === 0 ? " Nothing was due." : ""}
+      </p>
+      <button
+        type="button"
+        onClick={() => setVisible(false)}
+        aria-label="Dismiss"
+        className="-m-1 rounded p-1 text-indigo-700 transition-colors hover:bg-indigo-100 hover:text-indigo-900"
+      >
+        <X size={14} aria-hidden />
+      </button>
+    </div>
+  );
+}
 
 function StatusChip({ email }: { email: EmailView }) {
   if (!email.response) {
@@ -40,7 +81,9 @@ function StatusChip({ email }: { email: EmailView }) {
 
 function EmailCard({ email }: { email: EmailView }) {
   return (
-    <article className="overflow-hidden rounded-lg border border-zinc-200 bg-white transition-shadow hover:shadow-sm">
+    <article
+      className={`${card} overflow-hidden transition-shadow hover:shadow-md hover:shadow-zinc-900/5`}
+    >
       <div className="border-b border-zinc-100 bg-zinc-50/60 px-5 py-3">
         <div className="flex items-center justify-between gap-3">
           <span className="flex min-w-0 items-center gap-2">
@@ -125,7 +168,7 @@ export function EmailList({ emails }: { emails: EmailView[] }) {
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-2.5">
-        <div className="inline-flex gap-1 rounded-lg bg-zinc-100 p-1">
+        <div className="flex w-full gap-1 overflow-x-auto rounded-lg bg-zinc-100 p-1 sm:inline-flex sm:w-auto">
           {(
             [
               ["all", "All"],
@@ -138,7 +181,7 @@ export function EmailList({ emails }: { emails: EmailView[] }) {
               type="button"
               onClick={() => setStatus(id)}
               aria-pressed={status === id}
-              className={`inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`inline-flex flex-1 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-colors duration-150 sm:flex-none ${
                 status === id
                   ? "bg-white text-zinc-900 shadow-sm"
                   : "text-zinc-600 hover:text-zinc-900"
@@ -153,7 +196,7 @@ export function EmailList({ emails }: { emails: EmailView[] }) {
           value={notice}
           onChange={(e) => setNotice(e.target.value)}
           aria-label="Filter by notice type"
-          className="rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100"
+          className="w-full rounded-md border border-zinc-300 bg-white px-2.5 py-1.5 text-sm text-zinc-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100 sm:w-auto"
         >
           <option value="all">All notices</option>
           {noticeOptions.map((n) => (

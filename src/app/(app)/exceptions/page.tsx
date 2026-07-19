@@ -4,13 +4,14 @@ import { db } from "@/lib/db";
 import { daysUntil } from "@/lib/dates";
 import { formatDate, tMark } from "@/lib/display";
 import { markAssetReturned, resendNudge } from "@/lib/actions";
-import { ActionButton } from "@/components/action-button";
+import { ActionForm } from "@/components/action-form";
 import { Tabs } from "@/components/tabs";
 import {
   AuditTrail,
   EmptyState,
   PageHeader,
   buttonSmall,
+  card,
   type AuditEntryView,
 } from "@/components/ui";
 
@@ -69,11 +70,11 @@ function FindingCard({
   footer?: React.ReactNode;
 }) {
   return (
-    <article className="rounded-lg border border-zinc-200 bg-white p-5 transition-shadow hover:shadow-sm">
+    <article className={`${card} p-4 transition-shadow hover:shadow-md hover:shadow-zinc-900/5 sm:p-5`}>
       <div className="flex items-start gap-3.5">
         <span
           aria-hidden
-          className="flex size-8 shrink-0 select-none items-center justify-center rounded-full bg-zinc-100 text-[11px] font-semibold text-zinc-700"
+          className="hidden size-8 shrink-0 select-none items-center justify-center rounded-full bg-zinc-100 text-[11px] font-semibold text-zinc-700 ring-1 ring-zinc-200 sm:flex"
         >
           {initials(c)}
         </span>
@@ -131,13 +132,15 @@ function NoResponsePanel({ findings }: { findings: Finding[] }) {
             }
             actions={
               <>
-                <form action={resendNudge}>
-                  <input type="hidden" name="contractorId" value={c.id} />
-                  <ActionButton className={buttonSmall}>
-                    <Send size={12} aria-hidden />
-                    Send new nudge
-                  </ActionButton>
-                </form>
+                <ActionForm
+                  action={resendNudge}
+                  fields={{ contractorId: c.id }}
+                  success={`Nudge sent — a fresh email for ${c.managerName} is in the outbox.`}
+                  buttonClassName={buttonSmall}
+                >
+                  <Send size={12} aria-hidden />
+                  Send new nudge
+                </ActionForm>
                 {openToken ? (
                   <a
                     href={`/respond/${openToken}`}
@@ -189,13 +192,15 @@ function AssetsPanel({ findings }: { findings: Finding[] }) {
               </>
             }
             actions={
-              <form action={markAssetReturned}>
-                <input type="hidden" name="contractorId" value={c.id} />
-                <ActionButton className={buttonSmall}>
-                  <PackageCheck size={12} aria-hidden />
-                  Mark asset returned
-                </ActionButton>
-              </form>
+              <ActionForm
+                action={markAssetReturned}
+                fields={{ contractorId: c.id }}
+                success={`${c.assetType} marked as returned for ${c.firstName} ${c.lastName}.`}
+                buttonClassName={buttonSmall}
+              >
+                <PackageCheck size={12} aria-hidden />
+                Mark asset returned
+              </ActionForm>
             }
             footer={
               <p className="mt-3 text-xs leading-5 text-zinc-600">
@@ -227,7 +232,7 @@ export default async function ExceptionsPage() {
   const total = noResponse.length + assetsOut.length;
 
   return (
-    <main className="mx-auto max-w-3xl px-8 py-8">
+    <main className="mx-auto max-w-3xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       <PageHeader
         title="Exceptions"
         description={

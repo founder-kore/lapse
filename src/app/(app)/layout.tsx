@@ -1,7 +1,8 @@
 import { db } from "@/lib/db";
-import { Sidebar } from "@/components/sidebar";
+import { AppNav } from "@/components/sidebar";
+import { Toaster } from "@/components/toast";
 
-// The sidebar badge shows live open-finding counts, so this shell renders
+// The nav badge shows live open-finding counts, so this shell renders
 // per-request (all pages in this group are force-dynamic anyway).
 export const dynamic = "force-dynamic";
 
@@ -15,8 +16,9 @@ export default async function AppLayout({
 
   return (
     <div className="min-h-screen">
-      <Sidebar exceptionsCount={noResponse + assetsOut} />
-      <div className="pl-60">{children}</div>
+      <AppNav exceptionsCount={noResponse + assetsOut} />
+      <div className="lg:pl-60">{children}</div>
+      <Toaster />
     </div>
   );
 }

@@ -28,3 +28,57 @@ body {
   background: #e0e7ff; /* indigo-100 */
   color: #312e81; /* indigo-900 */
 }
+
+/* Shared micro-interaction primitives. Quick and subtle by design. */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-rise {
+  animation: rise-in 0.22s ease-out both;
+}
+
+.animate-drawer {
+  animation: slide-in-left 0.2s ease-out both;
+}
+
+.animate-fade {
+  animation: fade-in 0.15s ease-out both;
+}
+
+/* Respect users who opt out of motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-rise,
+  .animate-drawer,
+  .animate-fade {
+    animation: none;
+  }
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}
