@@ -33,9 +33,16 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# local database (regenerate: npx prisma migrate dev && npx prisma db seed)
+/prisma/dev.db
+/prisma/*.db-journal
+/prisma/*.db-wal
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma

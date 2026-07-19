@@ -1,8 +1,12 @@
 @import "tailwindcss";
 
+/* Single light theme. No dark mode — components assume a light background.
+   color-scheme: light tells the browser to keep native controls (date picker,
+   scrollbars) light even when the OS is in dark mode. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
+  --background: #fafafa;
+  --foreground: #18181b;
 }
 
 @theme inline {
@@ -12,15 +16,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Align all digits so day counts stack vertically. */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Brand accent for text selection — quiet, on-theme. */
+::selection {
+  background: #e0e7ff; /* indigo-100 */
+  color: #312e81; /* indigo-900 */
 }

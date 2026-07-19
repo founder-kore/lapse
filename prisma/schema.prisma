@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Contractor {
+  id           String    @id @default(cuid())
+  externalId   String    @unique
+  firstName    String
+  lastName     String
+  email        String
+  managerName  String
+  managerEmail String
+  startDate    DateTime
+  endDate      DateTime
+  status       String    @default("ACTIVE")
+  assetType    String?
+  assetSerial  String?
+  assetReturned Boolean  @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  checkIns     CheckIn[]
+}
+
+model CheckIn {
+  id                String     @id @default(cuid())
+  contractorId      String
+  contractor        Contractor @relation(fields: [contractorId], references: [id], onDelete: Cascade)
+  daysBeforeExpiry  Int
+  sentAt            DateTime   @default(now())
+  respondedAt       DateTime?
+  response          String?
+  newEndDate        DateTime?
+  token             String     @unique @default(cuid())
+
+  @@index([contractorId])
+}
