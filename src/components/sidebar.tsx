@@ -112,6 +112,16 @@ export function AppNav({ exceptionsCount }: { exceptionsCount: number }) {
     setOpen(false);
   }, [pathname]);
 
+  // Lock body scroll while the drawer is open; restore on close/unmount.
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [open]);
+
   return (
     <>
       {/* Desktop sidebar */}
